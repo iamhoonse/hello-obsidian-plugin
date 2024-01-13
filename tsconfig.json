@@ -4,14 +4,15 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
-    "target": "ES6",
+    "target": "esnext",
     "allowJs": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
 	"strictNullChecks": true,
-    "lib": [
+    "jsx": "react",
+	  "lib": [
       "DOM",
       "ES5",
       "ES6",
@@ -19,6 +20,6 @@
     ]
   },
   "include": [
-    "**/*.ts"
+    "**/*.{ts|tsx}"
   ]
 }

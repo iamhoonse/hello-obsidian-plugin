@@ -1,4 +1,15 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import {
+	App,
+	Editor,
+	MarkdownView,
+	Modal,
+	Notice,
+	Plugin,
+	PluginSettingTab,
+	Setting,
+	WorkspaceLeaf
+} from 'obsidian';
+import {ExampleView} from "./ReactView";
 
 // Remember to rename these classes and interfaces!
 
@@ -10,7 +21,7 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 	mySetting: 'default'
 }
 
-export default class MyPlugin extends Plugin {
+export default class HelloObsidian extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
@@ -76,6 +87,19 @@ export default class MyPlugin extends Plugin {
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+
+		// 문서에서 소개한 예시 코드
+		this.addRibbonIcon('dice', 'Greet', () => {
+			new Notice('Hello Obsidian Plugin !!');
+		});
+
+		//
+		this.registerView(ExampleView.VIEW_TYPE_EXAMPLE, leaf => new ExampleView(leaf));
+
+		//
+		this.addRibbonIcon('dice', 'Activate View', () => {
+			this.activateView();
+		})
 	}
 
 	onunload() {
@@ -88,6 +112,26 @@ export default class MyPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	async activateView() {
+		const { workspace } = this.app;
+
+		let leaf: WorkspaceLeaf | null = null;
+		const leaves = workspace.getLeavesOfType(ExampleView.VIEW_TYPE_EXAMPLE);
+
+		if (leaves.length > 0) {
+			// A leaf with our view already exists, use that
+			leaf = leaves[0];
+		} else {
+			// Our view could not be found in the workspace, create a new leaf
+			// in the right sidebar for it
+			leaf = workspace.getRightLeaf(false);
+			await leaf.setViewState({ type: ExampleView.VIEW_TYPE_EXAMPLE, active: true });
+		}
+
+		// "Reveal" the leaf in case it is in a collapsed sidebar
+		workspace.revealLeaf(leaf);
 	}
 }
 
@@ -108,9 +152,9 @@ class SampleModal extends Modal {
 }
 
 class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+	plugin: HelloObsidian;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: HelloObsidian) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
